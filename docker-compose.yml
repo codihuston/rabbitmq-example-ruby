@@ -1,0 +1,59 @@
+version: "3.9"
+services:
+  rabbitmq_server:
+    container_name: rabbitmq
+    image: docker.io/library/rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_DEFAULT_VHOST: my_vhost
+    ports:
+        # AMQP protocol port
+        - '5672:5672'
+        # HTTP management UI
+        - '8000:15672'
+  # This is our application.
+  producer:
+    build:
+      context: ./producer
+    environment:
+      RABBITMQ_HOST: rabbitmq_server
+      RABBITMQ_VHOST: my_vhost
+      RABBITMQ_USER: user
+      RABBITMQ_PASS: password
+      INTERVAL: 3
+    depends_on:
+      - rabbitmq_server
+  direct_receiver_01:
+    build:
+      context: ./receiver
+    environment:
+      RABBITMQ_HOST: rabbitmq_server
+      RABBITMQ_VHOST: my_vhost
+      RABBITMQ_USER: user
+      RABBITMQ_PASS: password
+    depends_on:
+      - rabbitmq_server
+      - producer
+  direct_receiver_02:
+    build:
+      context: ./receiver
+    environment:
+      RABBITMQ_HOST: rabbitmq_server
+      RABBITMQ_VHOST: my_vhost
+      RABBITMQ_USER: user
+      RABBITMQ_PASS: password
+    depends_on:
+      - rabbitmq_server
+      - producer
+  direct_receiver_03:
+    build:
+      context: ./receiver
+    environment:
+      RABBITMQ_HOST: rabbitmq_server
+      RABBITMQ_VHOST: my_vhost
+      RABBITMQ_USER: user
+      RABBITMQ_PASS: password
+    depends_on:
+      - rabbitmq_server
+      - producer  
